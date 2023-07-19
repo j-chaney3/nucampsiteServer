@@ -5,6 +5,8 @@ const path = require('path');
 const logger = require('morgan');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
+const passport = require('passport');
+const authenticate = require('./authenticate'); //from authenticate.js
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -38,6 +40,7 @@ app.use(express.urlencoded({ extended: false }));
 //no longer needed with expess-session
 //app.use(cookieParser('12345-67890-54321'));
 
+//express session middleware
 app.use(
 	session({
 		name: 'session-id',
@@ -48,25 +51,22 @@ app.use(
 	})
 );
 
+//for use with session based authentication
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 function auth(req, res, next) {
-	console.log(req.session);
+	console.log(req.user);
 
-	if (!req.session.user) {
+	if (!req.user) {
 		const err = new Error('You are not authenticated!');
 		err.status = 401;
 		return next(err);
 	} else {
-		//check against value set in user router
-		if (req.session.user === 'authenticated') {
-			return next();
-		} else {
-			const err = new Error('You are not authenticated!');
-			err.status = 401;
-			return next(err);
-		}
+		return next();
 	}
 }
 
