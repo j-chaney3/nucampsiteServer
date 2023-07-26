@@ -38,7 +38,7 @@ server.on('listening', onListening);
  */
 
 const options = {
-	key: fs.readFileSync(__dirname + 'server.key'),
+	key: fs.readFileSync(__dirname + '/server.key'),
 	cert: fs.readFileSync(__dirname + '/server.cert'),
 };
 
